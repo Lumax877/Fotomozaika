@@ -14,6 +14,8 @@ def generate_images(number, resolution, picpath):
 
         image.save(f"{picpath}/image_{i}_{color}.png")
 
+    print("Generated")
+
 
 def check(dirpath):
     files = glob.glob(os.path.join(dirpath, '*'))
@@ -26,4 +28,4 @@ def check(dirpath):
 
 
 check(path)
-generate_images(100, (100, 100), path)
+generate_images(1000, (100, 100), path)
