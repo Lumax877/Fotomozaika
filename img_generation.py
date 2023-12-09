@@ -5,6 +5,22 @@ import glob
 
 path = "venv/generatedimages/script_v1"
 
+# moved average calculation to generation script to avoid unnecessary repetition
+def calculate_average_color(region):
+    width, height = region.size
+    r, g, b = 0, 0, 0
+
+    for y in range(height):
+        for x in range(width):
+            pixel_color = region.getpixel((x, y))
+            r += pixel_color[0]
+            g += pixel_color[1]
+            b += pixel_color[2]
+
+    total_pixels = width * height
+    avg_color = (r // total_pixels, g // total_pixels, b // total_pixels)
+    return avg_color
+
 
 def generate_images(number, resolution, picpath):
     for i in range(0, number):
@@ -12,9 +28,12 @@ def generate_images(number, resolution, picpath):
 
         image = Image.new('RGB', resolution, color)
 
-        image.save(f"{picpath}/image_{i}_{color}.png")
+        avg_color = calculate_average_color(image)
 
-    print("Generated")
+        avg_color_str = "_".join(map(str, avg_color))
+
+        image.save(f"{picpath}/image_{i}_{avg_color_str}.png")
+        print(i)
 
 
 def check(dirpath):
@@ -28,4 +47,4 @@ def check(dirpath):
 
 
 check(path)
-generate_images(1000, (100, 100), path)
+generate_images(10000, (100, 100), path)
