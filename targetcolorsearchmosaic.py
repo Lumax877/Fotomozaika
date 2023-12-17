@@ -3,6 +3,7 @@ import re
 import numpy as np
 from PIL import Image
 from skimage import color
+import tqdm
 
 
 def rgb_to_lab(rgb):
@@ -54,7 +55,7 @@ def find_most_similar_tile(target_color, tile_filenames):
     return most_similar_tile
 
 
-def mosaic_from_tiles(input_image_path, tiles_folder, output_path, tile_size=100):
+def mosaic_from_tiles(input_image_path, tiles_folder, output_path, tile_size=50):
     original_image = Image.open(input_image_path)
     original_w, original_h = original_image.size
 
@@ -62,8 +63,8 @@ def mosaic_from_tiles(input_image_path, tiles_folder, output_path, tile_size=100
 
     tile_filenames = os.listdir(tiles_folder)
 
-    for y in range(0, original_h, tile_size):
-        for x in range(0, original_w, tile_size):
+    for y in tqdm.tqdm(range(0, original_h, tile_size), desc="Rows"):
+        for x in tqdm.tqdm(range(0, original_w, tile_size), desc="Columns", leave=False):
             region = original_image.crop((x, y, x + tile_size, y + tile_size))
 
             target_color = calculate_average_color(region)
@@ -73,13 +74,12 @@ def mosaic_from_tiles(input_image_path, tiles_folder, output_path, tile_size=100
             most_similar_tile_path = os.path.join(tiles_folder, most_similar_tile_filename)
             most_similar_tile = Image.open(most_similar_tile_path)
             mosaic_image.paste(most_similar_tile, (x, y))
-            print(x*y)
 
     mosaic_image.save(output_path)
 
 mosaic_from_tiles(
     input_image_path="venv/generatedimages/some_input_images/bridge.jpg",
     tiles_folder="venv/generatedimages/script_v1",
-    output_path="venv/generatedimages/some_input_images/bridgemosaic10k.jpg"
+    output_path="venv/generatedimages/some_input_images/bridgemosaic40k-4x.jpg"
 )
 
